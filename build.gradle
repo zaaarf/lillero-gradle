@@ -1,0 +1,28 @@
+plugins {
+	id 'java-gradle-plugin'
+}
+
+repositories {
+	mavenCentral()
+	maven {url 'https://maven.fabricmc.net/' }
+}
+
+dependencies {
+	// for autoconfig
+	compileOnly libs.loom
+
+	// apparently kotlin DSL wants standard getters/setters on everything?
+	// no point in doing it by hand then
+	compileOnly libs.lombok
+	annotationProcessor libs.lombok
+}
+
+gradlePlugin {
+	plugins {
+		lillero {
+			id = 'ftbsc.lll.gradle'
+			implementationClass = 'ftbsc.lll.gradle.LilleroGradlePlugin'
+		}
+	}
+}
+
