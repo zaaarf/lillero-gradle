@@ -118,6 +118,11 @@ public abstract class LilleroGradleExtension {
 	 */
 	private final Property<Boolean> noServiceProvider;
 
+	/**
+	 * Creates a new extension.
+	 * @param factory the object factory to use (injected)
+	 * @param project the project to use (injected)
+	 */
 	@Inject
 	public LilleroGradleExtension(ObjectFactory factory, Project project) {
 		this.project = project;
@@ -142,11 +147,21 @@ public abstract class LilleroGradleExtension {
 	}
 
 	private MappingsConfiguration mapCfg = null;
+
+	/**
+	 * Builds if necessary and gets the {@link MappingsConfiguration}.
+	 * @return the mappings configuration
+	 */
 	public MappingsConfiguration getMappingsConfiguration() {
 		return this.mapCfg != null ? this.mapCfg : (this.mapCfg = new MappingsConfiguration(this.project, this));
 	}
 
 	private FakeMixinConfiguration fmCfg = null;
+
+	/**
+	 * Builds if necessary and gets the {@link FakeMixinConfiguration}.
+	 * @return the fake mixin configuration
+	 */
 	public FakeMixinConfiguration getFakeMixinConfiguration() {
 		return this.fmCfg != null ? this.fmCfg : (this.fmCfg = new FakeMixinConfiguration(this));
 	}

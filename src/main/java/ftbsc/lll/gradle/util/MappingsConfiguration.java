@@ -17,7 +17,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 /**
- * Object representing a project's mapping configuration.
+ * Represents the configuration related to mappings.
  */
 @Getter
 public class MappingsConfiguration {
@@ -28,6 +28,11 @@ public class MappingsConfiguration {
 	private boolean override = false;
 	private String taskIgnore = null;
 
+	/**
+	 * Creates a new {@link MappingsConfiguration} from the given extension.
+	 * @param project the {@link Project} to create this for
+	 * @param extension the {@link LilleroGradleExtension}
+	 */
 	public MappingsConfiguration(
 		Project project,
 		LilleroGradleExtension extension
@@ -119,6 +124,10 @@ public class MappingsConfiguration {
 		return crc.getValue();
 	}
 
+	/**
+	 * Appends the compiler arguments from this configuration to the given list.
+	 * @param compilerArgs the list to append to
+	 */
 	public void appendCompilerArgs(List<String> compilerArgs) {
 		if(this.taskIgnore != null && this.project.getGradle().getTaskGraph().hasTask(this.taskIgnore)) {
 			return;

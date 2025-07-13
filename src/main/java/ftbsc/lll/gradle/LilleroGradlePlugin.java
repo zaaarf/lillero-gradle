@@ -13,13 +13,17 @@ import java.util.List;
  * The main class for the lillero-gradle plugin.
  */
 public class LilleroGradlePlugin implements Plugin<Project> {
-	public static final String PLUGIN_ID = "lillero";
-	public static final String JAVA_PLUGIN_ID = "java";
-	public static final String JAVA_LIBRARY_PLUGIN_ID = "java-library";
+	private static final String PLUGIN_ID = "lillero";
+	private static final String JAVA_PLUGIN_ID = "java";
+	private static final String JAVA_LIBRARY_PLUGIN_ID = "java-library";
+	private static final String FORGE_GRADLE_PLUGIN_ID = "net.minecraftforge.gradle";
+	private static final String SHADOW_PLUGIN_ID = "com.gradleup.shadow";
+	private static final String SHADOW_OLD_PLUGIN_ID = "com.github.johnrengelman.shadow";
+
+	/**
+	 * The plugin ID of fabric-loom.
+	 */
 	public static final String LOOM_PLUGIN_ID = "fabric-loom";
-	public static final String FORGE_GRADLE_PLUGIN_ID = "net.minecraftforge.gradle";
-	public static final String SHADOW_PLUGIN_ID = "com.gradleup.shadow";
-	public static final String SHADOW_OLD_PLUGIN_ID = "com.github.johnrengelman.shadow";
 
 	private static final String CORE_DEPSTRING = "ftbsc:lll:";
 	private static final String PROCESSOR_DEPSTRING = "ftbsc.lll:processor:";
