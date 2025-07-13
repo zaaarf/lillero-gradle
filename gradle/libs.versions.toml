@@ -1,7 +1,0 @@
-[versions]
-lombok = '1.18.38'
-loom = '1.10-SNAPSHOT'
-
-[libraries]
-lombok = { group = 'org.projectlombok', name = 'lombok', version.ref = 'lombok' }
-loom = { group = 'net.fabricmc', name = 'fabric-loom', version.ref = 'loom' }

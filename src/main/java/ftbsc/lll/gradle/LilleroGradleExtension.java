@@ -13,6 +13,7 @@ import javax.inject.Inject;
 /**
  * lillero-gradle's extension point, allowing user customisation.
  */
+@Getter
 public abstract class LilleroGradleExtension {
 	/**
 	 * The project this is for.
@@ -23,7 +24,6 @@ public abstract class LilleroGradleExtension {
 	 * Whether this should register the custom repository implicitly.
 	 * Defaults to true.
 	 */
-	@Getter
 	private final Property<Boolean> registerRepo;
 
 	/**
@@ -31,42 +31,36 @@ public abstract class LilleroGradleExtension {
 	 * environment. Currently only supports loom.
 	 * Defaults to true.
 	 */
-	@Getter
 	private final Property<Boolean> auto;
 
 	/**
 	 * The version of lillero to use.
 	 * Defaults to the latest.
 	 */
-	@Getter
 	private final Property<String> coreVersion;
 
 	/**
 	 * The version of lillero-processor to use.
 	 * Defaults to the latest.
 	 */
-	@Getter
 	private final Property<String> processorVersion;
 
 	/**
 	 * The version of lillero-mixin to use.
 	 * Defaults to the latest.
 	 */
-	@Getter
 	private final Property<String> mixinVersion;
 
 	/**
 	 * The version of lillero-loader to use.
 	 * Defaults to the latest.
 	 */
-	@Getter
 	private final Property<String> loaderVersion;
 
 	/**
 	 * Whether this should attempt to shadow lillero in the plugin.
-	 * Defaults to true; will be a no-op if the shadow plugin is not present.
+	 * Defaults to false; will be a no-op if the shadow plugin is not present.
 	 */
-	@Getter
 	private final Property<Boolean> shadow;
 
 	/**
@@ -74,64 +68,54 @@ public abstract class LilleroGradleExtension {
 	 * You still need to specify it in your mod's configuration.
 	 * Has no default value.
 	 */
-	@Getter
 	private final Property<String> fakeMixinFQN;
 
 	/**
 	 * The output package for the classes.
 	 * Defaults to the package of the fake mixin (or to unset, if no fake mixin is provided).
 	 */
-	@Getter
 	private final Property<String> outputPackage;
-
 
 	/**
 	 * Custom mappings to use instead of autoloaded ones.
 	 * Defaults to the latest.
 	 */
-	@Getter
 	private final RegularFileProperty mappings;
 
 	/**
 	 * The namespace to map from.
 	 * Has no default value.
 	 */
-	@Getter
 	private final Property<String> mappingsNamespaceFrom;
 
 	/**
 	 * The namespace to map to.
 	 * Has no default value.
 	 */
-	@Getter
 	private final Property<String> mappingsNamespaceTo;
 
 	/**
 	 * Whether to warn about unverifiable anonymous classes.
 	 * Defaults to true.
 	 */
-	@Getter
 	private final Property<Boolean> anonymousClassWarning;
 
 	/**
 	 * Whether to warn about manually specified fully qualified names that can't be validated.
 	 * Defaults to true.
 	 */
-	@Getter
 	private final Property<Boolean> manualClassWarning;
 
 	/**
 	 * Whether generated IInjectors should use obfuscated names at runtime
 	 * Defaults to false.
 	 */
-	@Getter
 	private final Property<Boolean> obfuscateInjectorMetadata;
 
 	/**
 	 * Whether this should avoid generating service a provider file.
 	 * Defaults to false.
 	 */
-	@Getter
 	private final Property<Boolean> noServiceProvider;
 
 	@Inject
@@ -139,11 +123,14 @@ public abstract class LilleroGradleExtension {
 		this.project = project;
 		this.registerRepo = factory.property(Boolean.class).convention(true);
 		this.auto = factory.property(Boolean.class).convention(true);
-		this.coreVersion = factory.property(String.class).convention("+");
-		this.mixinVersion = factory.property(String.class).convention("+");
+
+		// TODO deal with the version numbers
+		this.coreVersion = factory.property(String.class).convention("0.6.1");
+		this.mixinVersion = factory.property(String.class).convention("0.2.2");
 		this.loaderVersion = factory.property(String.class).convention("+");
-		this.processorVersion = factory.property(String.class).convention("+");
-		this.shadow = factory.property(Boolean.class).convention(true);
+		this.processorVersion = factory.property(String.class).convention("0.9.0");
+
+		this.shadow = factory.property(Boolean.class).convention(false);
 		this.fakeMixinFQN = factory.property(String.class);
 		this.outputPackage = factory.property(String.class);
 		this.mappings = factory.fileProperty();

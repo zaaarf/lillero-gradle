@@ -1,20 +1,22 @@
 plugins {
 	id 'java-gradle-plugin'
+	id 'maven-publish'
 }
 
 repositories {
 	mavenCentral()
+	mavenLocal()
 	maven {url 'https://maven.fabricmc.net/' }
 }
 
-dependencies {
-	// for autoconfig
-	compileOnly libs.loom
+group = "ftbsc.lll"
+version = "1.0.0" // TODO: proper versioning
 
+dependencies {
 	// apparently kotlin DSL wants standard getters/setters on everything?
 	// no point in doing it by hand then
-	compileOnly libs.lombok
-	annotationProcessor libs.lombok
+	compileOnly 'org.projectlombok:lombok:1.18.38'
+	annotationProcessor 'org.projectlombok:lombok:1.18.38'
 }
 
 gradlePlugin {
