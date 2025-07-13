@@ -1,15 +1,22 @@
 plugins {
 	id 'java-gradle-plugin'
 	id 'com.palantir.git-version' version '4.0.0'
+	id 'maven-publish'
 }
 
 repositories {
 	mavenCentral()
+	mavenLocal()
 	maven {url 'https://maven.fabricmc.net/' }
 }
 
 group = 'ftbsc.lll'
 version = versionDetails().lastTag
+
+java {
+	withSourcesJar()
+	withJavadocJar()
+}
 
 dependencies {
 	// apparently kotlin DSL wants standard getters/setters on everything?

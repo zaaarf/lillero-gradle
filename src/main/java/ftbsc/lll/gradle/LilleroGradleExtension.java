@@ -124,11 +124,10 @@ public abstract class LilleroGradleExtension {
 		this.registerRepo = factory.property(Boolean.class).convention(true);
 		this.auto = factory.property(Boolean.class).convention(true);
 
-		// TODO deal with the version numbers
-		this.coreVersion = factory.property(String.class).convention("0.6.1");
-		this.mixinVersion = factory.property(String.class).convention("0.2.2");
+		this.coreVersion = factory.property(String.class).convention("+");
+		this.mixinVersion = factory.property(String.class).convention("+");
 		this.loaderVersion = factory.property(String.class).convention("+");
-		this.processorVersion = factory.property(String.class).convention("0.9.0");
+		this.processorVersion = factory.property(String.class).convention("+");
 
 		this.shadow = factory.property(Boolean.class).convention(false);
 		this.fakeMixinFQN = factory.property(String.class);
