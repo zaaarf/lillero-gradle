@@ -99,7 +99,7 @@ public class MappingsConfiguration {
 			}
 		}
 
-		File gradleDir = new File(project.getGradle().getGradleUserHomeDir(), "lillero");
+		File gradleDir = new File(project.getGradle().getGradleUserHomeDir(), "lillero/yarn");
 		//noinspection ResultOfMethodCallIgnored
 		gradleDir.mkdirs();
 
