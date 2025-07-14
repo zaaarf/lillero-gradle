@@ -107,8 +107,8 @@ public abstract class LilleroGradleExtension {
 	private final Property<Boolean> manualClassWarning;
 
 	/**
-	 * Whether generated IInjectors should use obfuscated names at runtime
-	 * Defaults to false.
+	 * Whether generated IInjectors should use obfuscated names at runtime.
+	 * Defaults to true.
 	 */
 	private final Property<Boolean> obfuscateInjectorMetadata;
 
@@ -142,7 +142,7 @@ public abstract class LilleroGradleExtension {
 		this.mappingsNamespaceTo = factory.property(String.class);
 		this.anonymousClassWarning = factory.property(Boolean.class).convention(true);
 		this.manualClassWarning = factory.property(Boolean.class).convention(true);
-		this.obfuscateInjectorMetadata = factory.property(Boolean.class).convention(false);
+		this.obfuscateInjectorMetadata = factory.property(Boolean.class).convention(true);
 		this.noServiceProvider = factory.property(Boolean.class).convention(false);
 	}
 
