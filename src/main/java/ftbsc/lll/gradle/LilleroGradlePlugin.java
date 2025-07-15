@@ -62,7 +62,7 @@ public class LilleroGradlePlugin implements Plugin<Project> {
 			}
 
 			// bare minimum dependencies that any lillero project will need
-			project.getDependencies().add("compileOnly", CORE_DEPSTRING + extension.getCoreVersion().get());
+			project.getDependencies().add("implementation", CORE_DEPSTRING + extension.getCoreVersion().get());
 			if(extension.getShadow().get()) {
 				shade(project, CORE_DEPSTRING + extension.getCoreVersion().get());
 			}
@@ -73,12 +73,10 @@ public class LilleroGradlePlugin implements Plugin<Project> {
 			// if auto-configure, add the appropriate loader
 			if(extension.getAuto().get()) {
 				if(project.getPlugins().hasPlugin(LilleroGradlePlugin.LOOM_PLUGIN_ID)) {
-					project.getDependencies().add("compileOnly", MIXIN_DEPSTRING + extension.getMixinVersion().get());
+					project.getDependencies().add("implementation", MIXIN_DEPSTRING + extension.getMixinVersion().get());
 					if(extension.getShadow().get()) {
 						shade(project, MIXIN_DEPSTRING + extension.getMixinVersion().get());
 					}
-				} else if(project.getPlugins().hasPlugin(LilleroGradlePlugin.FORGE_GRADLE_PLUGIN_ID)) {
-					project.getDependencies().add("compileOnly", LOADER_DEPSTRING + extension.getLoaderVersion().get());
 				}
 			}
 		});
