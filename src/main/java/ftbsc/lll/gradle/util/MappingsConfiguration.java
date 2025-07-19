@@ -5,6 +5,7 @@ import ftbsc.lll.gradle.LilleroGradlePlugin;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.gradle.api.Project;
+import org.gradle.api.Task;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.ResolvedArtifact;
 import org.gradle.api.file.RegularFile;
@@ -26,7 +27,7 @@ public class MappingsConfiguration {
 	private String namespaceFrom = null;
 	private String namespaceTo = null;
 	private boolean override = false;
-	private String taskIgnore = null;
+	private Task taskIgnore = null;
 
 	/**
 	 * Creates a new {@link MappingsConfiguration} from the given extension.
@@ -48,7 +49,7 @@ public class MappingsConfiguration {
 			this.mappings = extract(project);
 			this.namespaceFrom = "named";
 			this.namespaceTo = "intermediary";
-			this.taskIgnore = "runClient";
+			this.taskIgnore = project.getTasks().findByName("runClient");;
 		}
 	}
 
