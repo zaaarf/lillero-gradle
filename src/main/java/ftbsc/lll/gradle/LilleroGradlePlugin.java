@@ -83,16 +83,18 @@ public class LilleroGradlePlugin implements Plugin<Project> {
 	}
 
 	private static void configureCompilerArgs(Project project, LilleroGradleExtension extension) {
-		project.getTasks().withType(JavaCompile.class).configureEach(javaCompile -> {
-			List<String> compilerArgs = javaCompile.getOptions().getCompilerArgs();
-			extension.getMappingsConfiguration().appendCompilerArgs(compilerArgs);
-			extension.getFakeMixinConfiguration().appendCompilerArgs(compilerArgs);
+		project.getGradle().getTaskGraph().whenReady(graph ->
+			project.getTasks().withType(JavaCompile.class).configureEach(javaCompile -> {
+				List<String> compilerArgs = javaCompile.getOptions().getCompilerArgs();
+				extension.getMappingsConfiguration().appendCompilerArgs(compilerArgs);
+				extension.getFakeMixinConfiguration().appendCompilerArgs(compilerArgs);
 
-			compilerArgs.add("-AanonymousClassWarning=" + extension.getAnonymousClassWarning().get());
-			compilerArgs.add("-AmanualClassWarning=" + extension.getManualClassWarning().get());
-			compilerArgs.add("-AobfuscateInjectorMetadata=" + extension.getObfuscateInjectorMetadata().get());
-			compilerArgs.add("-AnoServiceProvider=" + extension.getNoServiceProvider().get());
-		});
+				compilerArgs.add("-AanonymousClassWarning=" + extension.getAnonymousClassWarning().get());
+				compilerArgs.add("-AmanualClassWarning=" + extension.getManualClassWarning().get());
+				compilerArgs.add("-AobfuscateInjectorMetadata=" + extension.getObfuscateInjectorMetadata().get());
+				compilerArgs.add("-AnoServiceProvider=" + extension.getNoServiceProvider().get());
+			})
+		);
 	}
 
 	private static void shade(Project project, String dep) {
