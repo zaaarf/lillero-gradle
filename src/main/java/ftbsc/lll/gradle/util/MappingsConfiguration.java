@@ -43,12 +43,12 @@ public class MappingsConfiguration {
 			RegularFile file = extension.getMappings().getOrNull();
 			this.mappings = file != null ? file.getAsFile() : null;
 			this.namespaceFrom = extension.getMappingsNamespaceFrom().getOrNull();
-			this.namespaceTo =  extension.getMappingsNamespaceFrom().getOrNull();
+			this.namespaceTo =  extension.getMappingsNamespaceTo().getOrNull();
 			this.override = true;
 		} else if(this.project.getPlugins().hasPlugin(LilleroGradlePlugin.LOOM_PLUGIN_ID)) {
 			this.mappings = extract(project);
-			this.namespaceFrom = "named";
-			this.namespaceTo = "intermediary";
+			this.namespaceFrom = extension.getMappingsNamespaceFrom().getOrElse("named");
+			this.namespaceTo = extension.getMappingsNamespaceTo().getOrElse("intermediary");
 			this.taskIgnore = project.getTasks().findByName("runClient");;
 		}
 	}
