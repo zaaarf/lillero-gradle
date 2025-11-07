@@ -72,8 +72,8 @@ public class LilleroGradlePlugin implements Plugin<Project> {
 
 			// if auto-configure, add the appropriate loader
 			if(
-				project.getIncludeMixinPlugin()
-				|| (extension.getAuto().get() && project.getPlugins().hasPlugin(LilleroGradlePlugin.LOOM_PLUGIN_ID))
+				extension.getIncludeMixinPlugin().get()
+					|| (extension.getAuto().get() && project.getPlugins().hasPlugin(LilleroGradlePlugin.LOOM_PLUGIN_ID))
 			) {
 				project.getDependencies().add("implementation", MIXIN_DEPSTRING + extension.getMixinVersion().get());
 				if(extension.getShadow().get()) {
