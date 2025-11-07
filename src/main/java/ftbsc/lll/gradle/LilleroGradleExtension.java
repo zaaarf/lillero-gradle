@@ -63,6 +63,13 @@ public abstract class LilleroGradleExtension {
 	 */
 	private final Property<Boolean> shadow;
 
+	/*
+	 * Include lillero-mixin in dependencies, to provide the base Mixin class.
+	 * If you're using Loom, the `auto` setting will include it regardless, but
+	 * when needed regardless of Loom enable this flag.
+	 */
+	private final Property<Boolean> includeMixinPlugin;
+
 	/**
 	 * The fully-qualified name to the fake mixin.
 	 * You still need to specify it in your mod's configuration.
@@ -135,6 +142,7 @@ public abstract class LilleroGradleExtension {
 		this.processorVersion = factory.property(String.class).convention("+");
 
 		this.shadow = factory.property(Boolean.class).convention(false);
+		this.includeMixinPlugin = factory.property(Boolean.class).convention(false);
 		this.fakeMixinFQN = factory.property(String.class);
 		this.outputPackage = factory.property(String.class);
 		this.mappings = factory.fileProperty();

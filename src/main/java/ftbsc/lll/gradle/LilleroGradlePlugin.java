@@ -71,12 +71,13 @@ public class LilleroGradlePlugin implements Plugin<Project> {
 			project.getDependencies().add("annotationProcessor", PROCESSOR_DEPSTRING + extension.getProcessorVersion().get());
 
 			// if auto-configure, add the appropriate loader
-			if(extension.getAuto().get()) {
-				if(project.getPlugins().hasPlugin(LilleroGradlePlugin.LOOM_PLUGIN_ID)) {
-					project.getDependencies().add("implementation", MIXIN_DEPSTRING + extension.getMixinVersion().get());
-					if(extension.getShadow().get()) {
-						shade(project, MIXIN_DEPSTRING + extension.getMixinVersion().get());
-					}
+			if(
+				project.getIncludeMixinPlugin()
+				|| (extension.getAuto().get() && project.getPlugins().hasPlugin(LilleroGradlePlugin.LOOM_PLUGIN_ID))
+			) {
+				project.getDependencies().add("implementation", MIXIN_DEPSTRING + extension.getMixinVersion().get());
+				if(extension.getShadow().get()) {
+					shade(project, MIXIN_DEPSTRING + extension.getMixinVersion().get());
 				}
 			}
 		});

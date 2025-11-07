@@ -34,6 +34,11 @@ lillero {
 	// It will not do anything unless the shadow plugin is applied.
 	shadow = false
 
+	// Include lillero-mixin in dependencies, to provide the base Mixin class.
+	// If you're using Loom, the `auto` setting will include it regardless, but
+	// when needed regardless of Loom enable this flag.
+	includeMixinPlugin = false
+
 	// When set, it will generate a fake mixin at the given path.
 	// It does not have a default value.
 	fakeMixinFQN = 'my.package.FakeMixin'
