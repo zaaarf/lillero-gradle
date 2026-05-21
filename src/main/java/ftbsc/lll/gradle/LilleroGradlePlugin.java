@@ -71,19 +71,21 @@ public class LilleroGradlePlugin implements Plugin<Project> {
 			}
 
 			// bare minimum dependencies that any lillero project will need
-			project.getDependencies().add("implementation", CORE_DEPSTRING + extension.getCoreVersion().get());
+			String coreDependency = CORE_DEPSTRING + extension.getCoreVersion().getOrElse("+");
+			project.getDependencies().add("implementation", coreDependency);
 			if(extension.getShadow().get()) {
-				shade(project, CORE_DEPSTRING + extension.getCoreVersion().get());
+				shade(project, coreDependency);
 			}
 
-			project.getDependencies().add("compileOnly", PROCESSOR_DEPSTRING + extension.getProcessorVersion().get());
-			project.getDependencies().add("annotationProcessor", PROCESSOR_DEPSTRING + extension.getProcessorVersion().get());
+			String processorDependency = PROCESSOR_DEPSTRING + extension.getProcessorVersion().getOrElse("+");
+			project.getDependencies().add("compileOnly", processorDependency);
+			project.getDependencies().add("annotationProcessor", processorDependency);
 
-			// if auto-configure and the project supports mixin, add lillero-mixin
-			if(extension.getAuto().get() && supportsMixin(project)) {
-				project.getDependencies().add("implementation", MIXIN_DEPSTRING + extension.getMixinVersion().get());
+			if(extension.getMixinVersion().isPresent() || extension.getAuto().get() && supportsMixin(project)) {
+				String mixinDependency = MIXIN_DEPSTRING + extension.getMixinVersion().getOrElse("+");
+				project.getDependencies().add("implementation", mixinDependency);
 				if(extension.getShadow().get()) {
-					shade(project, MIXIN_DEPSTRING + extension.getMixinVersion().get());
+					shade(project, mixinDependency);
 				}
 			}
 		});

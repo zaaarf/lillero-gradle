@@ -54,12 +54,6 @@ public abstract class LilleroGradleExtension {
 	private final Property<String> mixinVersion;
 
 	/**
-	 * The version of lillero-loader to use.
-	 * Defaults to the latest.
-	 */
-	private final Property<String> loaderVersion;
-
-	/**
 	 * Whether this should attempt to shadow lillero in the plugin.
 	 * Defaults to false; will be a no-op if the shadow plugin is not present.
 	 */
@@ -138,10 +132,9 @@ public abstract class LilleroGradleExtension {
 		this.registerRepo = factory.property(Boolean.class).convention(true);
 		this.auto = factory.property(Boolean.class).convention(true);
 
-		this.coreVersion = factory.property(String.class).convention("+");
-		this.mixinVersion = factory.property(String.class).convention("+");
-		this.loaderVersion = factory.property(String.class).convention("+");
-		this.processorVersion = factory.property(String.class).convention("+");
+		this.coreVersion = factory.property(String.class);
+		this.mixinVersion = factory.property(String.class);
+		this.processorVersion = factory.property(String.class);
 
 		this.shadow = factory.property(Boolean.class).convention(false);
 		this.fakeMixinFQN = factory.property(String.class);
