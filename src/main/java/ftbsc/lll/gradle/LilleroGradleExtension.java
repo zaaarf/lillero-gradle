@@ -27,8 +27,10 @@ public abstract class LilleroGradleExtension {
 	private final Property<Boolean> registerRepo;
 
 	/**
-	 * Whether this should attempt to pick the loader most suited to your
-	 * environment. Currently only supports loom.
+	 * Whether this should attempt to pick the official loader most suited to
+	 * your environment. Do note that if you want to use lillero-loader, you
+	 * must set this to false, as this setting will favour lillero-mixin, since
+	 * it requires no effort on the end user's part.
 	 * Defaults to true.
 	 */
 	private final Property<Boolean> auto;
@@ -62,13 +64,6 @@ public abstract class LilleroGradleExtension {
 	 * Defaults to false; will be a no-op if the shadow plugin is not present.
 	 */
 	private final Property<Boolean> shadow;
-
-	/*
-	 * Include lillero-mixin in dependencies, to provide the base Mixin class.
-	 * If you're using Loom, the `auto` setting will include it regardless, but
-	 * when needed regardless of Loom enable this flag.
-	 */
-	private final Property<Boolean> includeMixinPlugin;
 
 	/**
 	 * The fully-qualified name to the fake mixin.
@@ -149,7 +144,6 @@ public abstract class LilleroGradleExtension {
 		this.processorVersion = factory.property(String.class).convention("+");
 
 		this.shadow = factory.property(Boolean.class).convention(false);
-		this.includeMixinPlugin = factory.property(Boolean.class).convention(false);
 		this.fakeMixinFQN = factory.property(String.class);
 		this.outputPackage = factory.property(String.class);
 		this.mappings = factory.fileProperty();

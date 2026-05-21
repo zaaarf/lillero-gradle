@@ -2,6 +2,7 @@ package ftbsc.lll.gradle;
 
 import org.gradle.api.Project;
 import org.gradle.api.Plugin;
+import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.Dependency;
 import org.gradle.api.artifacts.ModuleDependency;
 import org.gradle.api.tasks.compile.JavaCompile;
@@ -16,7 +17,6 @@ public class LilleroGradlePlugin implements Plugin<Project> {
 	private static final String PLUGIN_ID = "lillero";
 	private static final String JAVA_PLUGIN_ID = "java";
 	private static final String JAVA_LIBRARY_PLUGIN_ID = "java-library";
-	private static final String FORGE_GRADLE_PLUGIN_ID = "net.minecraftforge.gradle";
 	private static final String SHADOW_PLUGIN_ID = "com.gradleup.shadow";
 	private static final String SHADOW_OLD_PLUGIN_ID = "com.github.johnrengelman.shadow";
 
@@ -25,10 +25,19 @@ public class LilleroGradlePlugin implements Plugin<Project> {
 	 */
 	public static final String LOOM_PLUGIN_ID = "fabric-loom";
 
+	/**
+	 * The plugin ID for Minecraft Forge.
+	 */
+	private static final String FORGE_GRADLE_PLUGIN_ID = "net.minecraftforge.gradle";
+
+	/**
+	 * The plugin ID of NeoForged.
+	 */
+	public static final String NEOFORGED_PLUGIN_ID = "net.neoforged.gradle.userdev";
+
 	private static final String CORE_DEPSTRING = "ftbsc:lll:";
 	private static final String PROCESSOR_DEPSTRING = "ftbsc.lll:processor:";
 	private static final String MIXIN_DEPSTRING = "ftbsc.lll:mixin:";
-	private static final String LOADER_DEPSTRING = "ftbsc.lll:loader:";
 
 	@Override
 	public void apply(@NotNull Project proj) {
@@ -70,11 +79,8 @@ public class LilleroGradlePlugin implements Plugin<Project> {
 			project.getDependencies().add("compileOnly", PROCESSOR_DEPSTRING + extension.getProcessorVersion().get());
 			project.getDependencies().add("annotationProcessor", PROCESSOR_DEPSTRING + extension.getProcessorVersion().get());
 
-			// if auto-configure, add the appropriate loader
-			if(
-				extension.getIncludeMixinPlugin().get()
-					|| (extension.getAuto().get() && project.getPlugins().hasPlugin(LilleroGradlePlugin.LOOM_PLUGIN_ID))
-			) {
+			// if auto-configure and the project supports mixin, add lillero-mixin
+			if(extension.getAuto().get() && supportsMixin(project)) {
 				project.getDependencies().add("implementation", MIXIN_DEPSTRING + extension.getMixinVersion().get());
 				if(extension.getShadow().get()) {
 					shade(project, MIXIN_DEPSTRING + extension.getMixinVersion().get());
@@ -113,5 +119,46 @@ public class LilleroGradlePlugin implements Plugin<Project> {
 
 			project.getDependencies().add("shadow", shadedDep);
 		}
+	}
+
+	private static boolean supportsMixin(Project project) {
+		return project.getPlugins().hasPlugin(LOOM_PLUGIN_ID) // loom always supports mixin
+			|| project.getPlugins().hasPlugin(NEOFORGED_PLUGIN_ID) // neoforged always supports mixin
+			|| project.getPlugins().hasPlugin(FORGE_GRADLE_PLUGIN_ID) && forgeVersionSupportsMixin(project);
+	}
+
+	// forge added mixin support in its 1.13 release (v25)
+	// this is dirty but should hold as long as we Forge honors its own versioning rules
+	private static boolean forgeVersionSupportsMixin(Project project) {
+		Configuration minecraft = project.getConfigurations().findByName("minecraft");
+		if(minecraft != null) {
+			for(Dependency dep : minecraft.getDependencies()) {
+				if("net.minecraftforge".equals(dep.getGroup()) && "forge".equals(dep.getName())) {
+					String version = dep.getVersion();
+					if(version == null) {
+						return false;
+					}
+
+					int dash = version.indexOf('-');
+					if(dash == -1 || dash + 1 >= version.length()) {
+						return false;
+					}
+
+					String forgePart = version.substring(dash + 1);
+					int dot = forgePart.indexOf('.');
+					String majorString = dot == -1
+						? forgePart
+						: forgePart.substring(0, dot);
+
+					try {
+						return Integer.parseInt(majorString) >= 25;
+					} catch (NumberFormatException e) {
+						return false;
+					}
+				}
+			}
+		}
+
+		return false;
 	}
 }
