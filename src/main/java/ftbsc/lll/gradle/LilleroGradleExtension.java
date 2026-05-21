@@ -126,6 +126,13 @@ public abstract class LilleroGradleExtension {
 	private final Property<Boolean> noServiceProvider;
 
 	/**
+	 * Whether the processor should seek to find the core library a custom package,
+	 * which may happen in cases where you are using shadowed Lillero.
+	 * Has no default value.
+	 */
+	private final Property<String> apiPackage;
+
+	/**
 	 * Creates a new extension.
 	 * @param factory the object factory to use (injected)
 	 * @param project the project to use (injected)
@@ -152,6 +159,7 @@ public abstract class LilleroGradleExtension {
 		this.manualClassWarning = factory.property(Boolean.class).convention(true);
 		this.obfuscateInjectorMetadata = factory.property(Boolean.class).convention(true);
 		this.noServiceProvider = factory.property(Boolean.class).convention(false);
+		this.apiPackage = factory.property(String.class);
 	}
 
 	private MappingsConfiguration mapCfg = null;

@@ -94,6 +94,9 @@ public class LilleroGradlePlugin implements Plugin<Project> {
 				compilerArgs.add("-AmanualClassWarning=" + extension.getManualClassWarning().get());
 				compilerArgs.add("-AobfuscateInjectorMetadata=" + extension.getObfuscateInjectorMetadata().get());
 				compilerArgs.add("-AnoServiceProvider=" + extension.getNoServiceProvider().get());
+				if(extension.getApiPackage().isPresent()) {
+					compilerArgs.add("-AapiPackage=" + extension.getApiPackage().get());
+				}
 			})
 		);
 	}
