@@ -92,7 +92,7 @@ public class MappingsConfiguration {
 			return extractedTiny;
 		}
 
-		throw new RuntimeException("Loom applied but no mappings found!");
+		return null;
 	}
 
 	private static File getMappingFile(Project project, Configuration mappingsConfig) {
