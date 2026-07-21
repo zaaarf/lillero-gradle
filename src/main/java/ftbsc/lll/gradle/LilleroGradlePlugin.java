@@ -1,14 +1,17 @@
 package ftbsc.lll.gradle;
 
+import ftbsc.lll.gradle.util.DependencyBlueprint;
 import org.gradle.api.Project;
 import org.gradle.api.Plugin;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.Dependency;
 import org.gradle.api.artifacts.ModuleDependency;
+import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.compile.JavaCompile;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * The main class for the lillero-gradle plugin.
@@ -62,33 +65,23 @@ public class LilleroGradlePlugin implements Plugin<Project> {
 
 		configureCompilerArgs(proj, extension);
 
-		proj.afterEvaluate(project -> {
-			if( // at least one of these is needed so we can add dependencies properly
-				!project.getPlugins().hasPlugin(JAVA_PLUGIN_ID)
-					&& !project.getPlugins().hasPlugin(JAVA_LIBRARY_PLUGIN_ID)
-			) {
-				return;
-			}
+		Runnable configure = () -> configureDependencies(proj, extension);
+		proj.getPluginManager().withPlugin(JAVA_PLUGIN_ID, p -> configure.run());
+		proj.getPluginManager().withPlugin(JAVA_LIBRARY_PLUGIN_ID, p -> configure.run());
+	}
 
-			// bare minimum dependencies that any lillero project will need
-			String coreDependency = CORE_DEPSTRING + extension.getCoreVersion().getOrElse("+");
-			project.getDependencies().add("implementation", coreDependency);
-			if(extension.getShadow().get()) {
-				shade(project, coreDependency);
-			}
+	private static void configureDependencies(Project p, LilleroGradleExtension ext) {
+		DependencyBlueprint core = new DependencyBlueprint(p, CORE_DEPSTRING, ext.getCoreVersion());
+		p.getConfigurations().named("implementation").configure(c -> c.getDependencies().addLater(core.build()));
+		if(ext.getShadow().get()) {
+			shade(p, core);
+		}
 
-			String processorDependency = PROCESSOR_DEPSTRING + extension.getProcessorVersion().getOrElse("+");
-			project.getDependencies().add("compileOnly", processorDependency);
-			project.getDependencies().add("annotationProcessor", processorDependency);
+		DependencyBlueprint processor = new DependencyBlueprint(p, PROCESSOR_DEPSTRING, ext.getProcessorVersion());
+		p.getConfigurations().named("compileOnly").configure(c -> c.getDependencies().addLater(processor.build()));
+		p.getConfigurations().named("annotationProcessor").configure(c -> c.getDependencies().addLater(processor.build()));
 
-			if(extension.getMixinVersion().isPresent() || extension.getAuto().get() && supportsMixin(project)) {
-				String mixinDependency = MIXIN_DEPSTRING + extension.getMixinVersion().getOrElse("+");
-				project.getDependencies().add("implementation", mixinDependency);
-				if(extension.getShadow().get()) {
-					shade(project, mixinDependency);
-				}
-			}
-		});
+		configureMixin(p, ext);
 	}
 
 	private static void configureCompilerArgs(Project project, LilleroGradleExtension extension) {
@@ -109,24 +102,53 @@ public class LilleroGradlePlugin implements Plugin<Project> {
 		);
 	}
 
-	private static void shade(Project project, String dep) {
-		if(
-			project.getPlugins().hasPlugin(SHADOW_PLUGIN_ID)
-				|| project.getPlugins().hasPlugin(SHADOW_OLD_PLUGIN_ID)
-		) {
-			Dependency shadedDep = project.getDependencies().create(dep);
-			if(shadedDep instanceof ModuleDependency) {
-				((ModuleDependency) shadedDep).setTransitive(false);
-			}
+	private static void shade(Project project, DependencyBlueprint blueprint) {
+		Runnable doShade = () -> {
+			Provider<Dependency> shaded = blueprint.build().map(dep -> {
+				Dependency shadedDep = project.getDependencies().create(dep);
 
-			project.getDependencies().add("shadow", shadedDep);
-		}
+				if(shadedDep instanceof ModuleDependency) {
+					((ModuleDependency) shadedDep).setTransitive(false);
+				}
+
+				return shadedDep;
+			});
+
+			project.getConfigurations().named("shadow").configure(cfg -> cfg.getDependencies().addLater(shaded));
+		};
+
+		project.getPluginManager().withPlugin(SHADOW_PLUGIN_ID, p -> doShade.run());
+		project.getPluginManager().withPlugin(SHADOW_OLD_PLUGIN_ID, p -> doShade.run());
 	}
 
-	private static boolean supportsMixin(Project project) {
-		return project.getPlugins().hasPlugin(LOOM_PLUGIN_ID) // loom always supports mixin
-			|| project.getPlugins().hasPlugin(NEOFORGED_PLUGIN_ID) // neoforged always supports mixin
-			|| project.getPlugins().hasPlugin(FORGE_GRADLE_PLUGIN_ID) && forgeVersionSupportsMixin(project);
+	// sometimes i think about making one of these for geb, then i remember what it feels like
+	private static void configureMixin(Project project, LilleroGradleExtension ext) {
+		Consumer<Boolean> doConfigure = supported -> {
+			DependencyBlueprint mixin = new DependencyBlueprint(
+				project,
+				MIXIN_DEPSTRING,
+				ext.getMixinVersion(),
+				(p, d, v) -> v.isPresent() || ext.getAuto().isPresent() && supported
+			);
+
+			project.getConfigurations().named("implementation")
+				.configure(c -> c.getDependencies().addLater(mixin.build()));
+
+			if(ext.getShadow().get()) {
+				shade(project, mixin);
+			}
+		};
+
+		// loom and neoforged always support it, forge only in some versions
+		project.getPluginManager().withPlugin(LOOM_PLUGIN_ID, p -> doConfigure.accept(true));
+		project.getPluginManager().withPlugin(NEOFORGED_PLUGIN_ID, p -> doConfigure.accept(true));
+		project.getPluginManager().withPlugin(FORGE_GRADLE_PLUGIN_ID, p -> {
+			if(forgeVersionSupportsMixin(project)) {
+				doConfigure.accept(true);
+			}
+		});
+
+		doConfigure.accept(false);
 	}
 
 	// forge added mixin support in its 1.13 release (v25)
