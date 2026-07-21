@@ -73,9 +73,7 @@ public class LilleroGradlePlugin implements Plugin<Project> {
 	private static void configureDependencies(Project p, LilleroGradleExtension ext) {
 		DependencyBlueprint core = new DependencyBlueprint(p, CORE_DEPSTRING, ext.getCoreVersion());
 		p.getConfigurations().named("implementation").configure(c -> c.getDependencies().addLater(core.build()));
-		if(ext.getShadow().get()) {
-			shade(p, core);
-		}
+		shade(p, ext.getShadow(), core);
 
 		DependencyBlueprint processor = new DependencyBlueprint(p, PROCESSOR_DEPSTRING, ext.getProcessorVersion());
 		p.getConfigurations().named("compileOnly").configure(c -> c.getDependencies().addLater(processor.build()));
@@ -102,7 +100,7 @@ public class LilleroGradlePlugin implements Plugin<Project> {
 		);
 	}
 
-	private static void shade(Project project, DependencyBlueprint blueprint) {
+	private static void shade(Project project, Provider<Boolean> should, DependencyBlueprint blueprint) {
 		Runnable doShade = () -> {
 			Provider<Dependency> shaded = blueprint.build().map(dep -> {
 				Dependency shadedDep = project.getDependencies().create(dep);
@@ -112,7 +110,7 @@ public class LilleroGradlePlugin implements Plugin<Project> {
 				}
 
 				return shadedDep;
-			});
+			}).filter(d -> should.get());
 
 			project.getConfigurations().named("shadow").configure(cfg -> cfg.getDependencies().addLater(shaded));
 		};
@@ -134,9 +132,7 @@ public class LilleroGradlePlugin implements Plugin<Project> {
 			project.getConfigurations().named("implementation")
 				.configure(c -> c.getDependencies().addLater(mixin.build()));
 
-			if(ext.getShadow().get()) {
-				shade(project, mixin);
-			}
+			shade(project, ext.getShadow(), mixin);
 		};
 
 		// loom and neoforged always support it, forge only in some versions
